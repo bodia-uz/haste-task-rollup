@@ -1,0 +1,21 @@
+{
+  "name": "haste-task-rollup",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "rollup": "^0.55.5"
+  },
+  "devDependencies": {
+    "haste-core": "^0.1.22",
+    "haste-test-utils": "^0.2.5",
+    "jest": "^22.2.2"
+  }
+}
