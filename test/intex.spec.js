@@ -13,19 +13,12 @@ console.log(setup);
 describe('haste-task-rollup', () => {
   it ('should bundle with rollup', async () => {
     const test = await setup({
-      'entry.js': fromFixture('./fixtures/entry.js')
+      'entry.js': fromFixture('./fixtures/entry.js'),
+      'rollup.config.js': fromFixture('./fixtures/rollup.config.js'),
     });
 
     await test.run(async ({ [taskPath]: rollup }) => {
-      await rollup({
-        inputOptions: {
-          input: test.files['entry.js'].path
-        },
-        outputOptions: {
-          file: 'bundle.js',
-          format: 'umd',
-        },
-      });
+      await rollup({configPath: test.files['rollup.config.js'].path});
     });
 
     expect(test.files['bundle.js'].exists).toBe(true);
