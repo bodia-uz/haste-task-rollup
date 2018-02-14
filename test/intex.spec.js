@@ -8,8 +8,6 @@ const fromFixture = (filename) => {
 
 const taskPath = require.resolve('../src');
 
-console.log(setup);
-
 describe('haste-task-rollup', () => {
   it ('should bundle with rollup', async () => {
     const test = await setup({
@@ -22,6 +20,22 @@ describe('haste-task-rollup', () => {
     });
 
     expect(test.files['bundle.js'].exists).toBe(true);
+
+    test.cleanup();
+  });
+
+  it ('should bundle with rollup and configs as array', async () => {
+    const test = await setup({
+      'entry.js': fromFixture('./fixtures/entry.js'),
+      'rollup.config.js': fromFixture('./fixtures/rollup.config.array.js'),
+    });
+
+    await test.run(async ({ [taskPath]: rollup }) => {
+      await rollup({configPath: test.files['rollup.config.js'].path});
+    });
+
+    expect(test.files['bundle1.js'].exists).toBe(true);
+    expect(test.files['bundle2.js'].exists).toBe(true);
 
     test.cleanup();
   });

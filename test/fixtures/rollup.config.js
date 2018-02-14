@@ -1,4 +1,3 @@
-// export default {
 module.exports = {
   input: 'entry.js',
 
