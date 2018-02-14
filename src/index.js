@@ -1,31 +1,20 @@
-const rollup = require('rollup');
+const { spawn } = require('child_process');
 
-// TODO: mb use rollup cli + spawn. It will allow to better handle rollup.config.js
 // https://rollupjs.org/guide/en#command-line-reference
+module.exports = async ({ configPath }) => {
+  const rollupBin = require.resolve('rollup/bin/rollup');
 
-// https://rollupjs.org/guide/en#javascript-api
-module.exports = async ({ configPath, configParams, watch }) => {
-  let config = require(configPath);
+  return new Promise((resolve, reject) => {
+    const rollupWorker = spawn(rollupBin, ['--config', configPath]);
 
-  if (typeof config === 'function') {
-    config = config(configParams);
-  }
+    process.on('exit', () => rollupWorker.kill('SIGTERM'));
 
-  if (watch) {
-    const watcher = rollup.watch(config);
-
-    return new Promise((resolve, reject) => {
-      watcher.on('event', event => {
-        if (event.code === 'ERROR' || event.code === 'FATAL') {
-          reject(event);
-        }
-      });
+    rollupWorker.stdout.on('data', (buffer) => {
+      console.log(buffer.toString());
     });
-  }
 
-  const {output: outputOptions, ...inputOptions} = config;
-
-  const bundle = await rollup.rollup(inputOptions);
-
-  await bundle.write(outputOptions);
+    rollupWorker.on('exit', code => code === 0 ?
+      resolve() : reject(new Error(`rollup exited with code ${code}`)),
+    );
+  });
 };
